@@ -67,11 +67,11 @@ export function reduceScannerState(
         ...state,
         status: nextStatus,
         configuredMode: event.payload.configuredMode,
-        detectedMode: event.payload.detectedMode,
-        progress: event.payload.progress,
+        detectedMode: event.payload.detectedMode ?? state.detectedMode,
+        progress: Math.max(state.progress, event.payload.progress),
         message:
-          event.payload.progress > 0
-            ? `Receiving file... ${Math.round(event.payload.progress * 100)}%`
+          Math.max(state.progress, event.payload.progress) > 0
+            ? `Receiving file... ${Math.round(Math.max(state.progress, event.payload.progress) * 100)}%`
             : event.payload.accepted
               ? 'Frame accepted. Keep the screen stable for the remaining packets.'
               : event.payload.report || 'Scanning for cimbar frames...',

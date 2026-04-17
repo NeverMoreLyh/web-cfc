@@ -7,6 +7,8 @@ let lastConfiguredMode = null;
 let detectedMode = null;
 let frameCounter = 0;
 let progress = 0;
+let stickyProgress = 0;
+let stickyAccepted = false;
 let reportText = '';
 const heapBuffers = new Map();
 
@@ -156,6 +158,8 @@ async function bootRuntime(payload) {
     currentMode = normalizeMode(payload.mode);
     detectedMode = null;
     progress = 0;
+    stickyProgress = 0;
+    stickyAccepted = false;
     reportText = '';
     frameCounter = 0;
     lastConfiguredMode = null;
@@ -177,6 +181,8 @@ async function bootRuntime(payload) {
         currentMode = normalizeMode(payload.mode);
         detectedMode = null;
         progress = 0;
+        stickyProgress = 0;
+        stickyAccepted = false;
         reportText = '';
         frameCounter = 0;
         lastConfiguredMode = null;
@@ -230,12 +236,12 @@ function processFrame(payload) {
   reportText = readReport();
 
   if (extractedBytes <= 0) {
-    progress = parseProgress(reportText);
+    progress = Math.max(stickyProgress, parseProgress(reportText));
     return {
       configuredMode: currentMode,
       detectedMode,
       progress,
-      accepted: false,
+      accepted: stickyAccepted,
       report: reportText,
       completedFile: null,
     };
@@ -251,7 +257,12 @@ function processFrame(payload) {
 
   if (currentMode === 0) {
     detectedMode = frameMode;
+  } else {
+    detectedMode = currentMode;
   }
+
+  stickyProgress = Math.max(stickyProgress, progress);
+  stickyAccepted = true;
 
   const fileId = bigintToFileId(decodeResult);
   const completedFile = fileId > 0 ? assembleCompletedFile(fileId) : null;
@@ -259,7 +270,7 @@ function processFrame(payload) {
   return {
     configuredMode: currentMode,
     detectedMode,
-    progress: completedFile ? 1 : progress,
+    progress: completedFile ? 1 : stickyProgress,
     accepted: true,
     report: reportText,
     completedFile,
