@@ -5,7 +5,7 @@ interface FrameSchedulerOptions {
 }
 
 export class FrameScheduler {
-  private readonly targetFps: number;
+  private targetFps: number;
   private animationFrameId = 0;
   private running = false;
   private inFlight = false;
@@ -23,13 +23,12 @@ export class FrameScheduler {
     this.running = true;
     this.lastTickAt = 0;
 
-    const interval = 1000 / this.targetFps;
-
     const loop = async (timestamp: number) => {
       if (!this.running) {
         return;
       }
 
+      const interval = 1000 / this.targetFps;
       if (!this.inFlight && timestamp - this.lastTickAt >= interval) {
         this.inFlight = true;
         this.lastTickAt = timestamp;
@@ -53,5 +52,9 @@ export class FrameScheduler {
       window.cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = 0;
     }
+  }
+
+  setTargetFps(targetFps: number): void {
+    this.targetFps = Math.max(1, targetFps);
   }
 }

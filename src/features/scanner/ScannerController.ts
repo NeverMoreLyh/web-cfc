@@ -73,6 +73,7 @@ export class ScannerController {
     }
 
     const mode = this.state.configuredMode;
+    this.applySchedulerProfile(mode);
     this.dispatch({ type: 'START_REQUESTED', mode });
 
     try {
@@ -100,6 +101,7 @@ export class ScannerController {
 
   async reset(): Promise<void> {
     const mode = this.state.configuredMode;
+    this.applySchedulerProfile(mode);
     this.scheduler.stop();
     this.downloads.clear();
     this.dispatch({
@@ -124,6 +126,7 @@ export class ScannerController {
 
   async changeMode(mode: DecoderModeValue): Promise<void> {
     const wasActive = this.active;
+    this.applySchedulerProfile(mode);
     this.state = {
       ...this.state,
       configuredMode: mode,
@@ -250,5 +253,9 @@ export class ScannerController {
 
   private render(): void {
     this.view.render(this.state as ScannerState);
+  }
+
+  private applySchedulerProfile(mode: DecoderModeValue): void {
+    this.scheduler.setTargetFps(mode === 0 ? 6 : 10);
   }
 }
