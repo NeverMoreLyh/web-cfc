@@ -27,6 +27,7 @@ export class AppView {
   private readonly progressValue: HTMLElement;
   private readonly messageBox: HTMLElement;
   private readonly downloadLink: HTMLAnchorElement;
+  private readonly versionValue: HTMLElement;
 
   constructor(root: HTMLElement) {
     this.root = root;
@@ -37,6 +38,7 @@ export class AppView {
             <div class="pill">HTTPS · Safari first · libcimbar WASM</div>
             <h1>cimbar Web Receiver</h1>
           </div>
+          <div class="version-badge" id="version-badge">version --</div>
         </header>
 
         <main class="stage">
@@ -97,6 +99,7 @@ export class AppView {
     ) as HTMLElement;
     this.messageBox = this.root.querySelector('#message-box') as HTMLElement;
     this.downloadLink = this.root.querySelector('#download-link') as HTMLAnchorElement;
+    this.versionValue = this.root.querySelector('#version-badge') as HTMLElement;
   }
 
   bind(bindings: AppViewBindings): void {
@@ -129,5 +132,9 @@ export class AppView {
       this.downloadLink.textContent = 'Download file';
       this.downloadLink.dataset.visible = 'false';
     }
+  }
+
+  setVersion(version: string): void {
+    this.versionValue.textContent = version;
   }
 }

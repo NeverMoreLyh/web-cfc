@@ -1,5 +1,6 @@
 import { ScannerController } from '../features/scanner/ScannerController';
 import { AppView } from '../shared/ui/AppView';
+import packageJson from '../../package.json';
 
 function resolvePublicAsset(path: string): string {
   const base = import.meta.env.BASE_URL || '/';
@@ -12,6 +13,7 @@ export async function bootstrap(root: HTMLElement | null): Promise<void> {
   }
 
   const view = new AppView(root);
+  view.setVersion(`v${packageJson.version}`);
   const controller = new ScannerController({
     view,
     workerUrl: resolvePublicAsset('workers/cimbar-decoder-worker.js'),

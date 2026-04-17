@@ -69,6 +69,7 @@ a {
 .hero {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
 }
 
@@ -89,6 +90,17 @@ a {
   color: #dff4e4;
   white-space: nowrap;
   font-size: 0.82rem;
+}
+
+.version-badge {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
 }
 
 .stage {
@@ -270,6 +282,11 @@ a {
 @media (max-width: 720px) {
   .hero {
     gap: 8px;
+  }
+
+  .version-badge {
+    font-size: 0.72rem;
+    padding: 5px 8px;
   }
 
   .preview-card {
