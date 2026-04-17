@@ -2,16 +2,19 @@ import type { FramePayload } from '../../shared/types/scanner';
 
 interface CameraControllerOptions {
   preferredMaxDimension?: number;
+  cropRatio?: number;
 }
 
 export class CameraController {
   private readonly preferredMaxDimension: number;
+  private readonly cropRatio: number;
   private readonly canvas: HTMLCanvasElement;
   private readonly context: CanvasRenderingContext2D;
   private stream: MediaStream | null = null;
 
   constructor(options: CameraControllerOptions = {}) {
-    this.preferredMaxDimension = options.preferredMaxDimension ?? 960;
+    this.preferredMaxDimension = options.preferredMaxDimension ?? 1280;
+    this.cropRatio = options.cropRatio ?? 0.82;
     this.canvas = document.createElement('canvas');
     const context = this.canvas.getContext('2d', { willReadFrequently: true });
     if (!context) {
@@ -85,24 +88,34 @@ export class CameraController {
       return null;
     }
 
-    const scale = Math.min(
-      1,
-      this.preferredMaxDimension / Math.max(sourceWidth, sourceHeight),
+    const cropSize = Math.round(
+      Math.min(sourceWidth, sourceHeight) * this.cropRatio,
     );
-    const width = Math.max(1, Math.round(sourceWidth * scale));
-    const height = Math.max(1, Math.round(sourceHeight * scale));
+    const cropX = Math.max(0, Math.round((sourceWidth - cropSize) / 2));
+    const cropY = Math.max(0, Math.round((sourceHeight - cropSize) / 2));
+    const outputSize = Math.max(1, Math.min(this.preferredMaxDimension, cropSize));
 
-    if (this.canvas.width !== width || this.canvas.height !== height) {
-      this.canvas.width = width;
-      this.canvas.height = height;
+    if (this.canvas.width !== outputSize || this.canvas.height !== outputSize) {
+      this.canvas.width = outputSize;
+      this.canvas.height = outputSize;
     }
 
-    this.context.drawImage(video, 0, 0, width, height);
-    const imageData = this.context.getImageData(0, 0, width, height);
+    this.context.drawImage(
+      video,
+      cropX,
+      cropY,
+      cropSize,
+      cropSize,
+      0,
+      0,
+      outputSize,
+      outputSize,
+    );
+    const imageData = this.context.getImageData(0, 0, outputSize, outputSize);
 
     return {
-      width,
-      height,
+      width: outputSize,
+      height: outputSize,
       buffer: imageData.data.buffer,
     };
   }
