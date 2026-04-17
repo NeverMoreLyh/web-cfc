@@ -240,7 +240,11 @@ export class ScannerController {
   }
 
   private dispatch(event: Parameters<typeof reduceScannerState>[1]): void {
-    this.state = reduceScannerState(this.state, event);
+    const nextState = reduceScannerState(this.state, event);
+    if (isSameScannerState(this.state, nextState)) {
+      return;
+    }
+    this.state = nextState;
     this.render();
   }
 
@@ -256,6 +260,18 @@ export class ScannerController {
   }
 
   private applySchedulerProfile(mode: DecoderModeValue): void {
-    this.scheduler.setTargetFps(mode === 0 ? 6 : 10);
+    this.scheduler.setTargetFps(mode === 0 ? 6 : 12);
   }
+}
+
+function isSameScannerState(left: ScannerState, right: ScannerState): boolean {
+  return (
+    left.status === right.status &&
+    left.configuredMode === right.configuredMode &&
+    left.detectedMode === right.detectedMode &&
+    Math.round(left.progress * 100) === Math.round(right.progress * 100) &&
+    left.message === right.message &&
+    left.download?.blobUrl === right.download?.blobUrl &&
+    left.download?.fileName === right.download?.fileName
+  );
 }
