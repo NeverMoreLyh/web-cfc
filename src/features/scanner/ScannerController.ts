@@ -30,6 +30,8 @@ export class ScannerController {
   private state = createInitialScannerState();
   private active = false;
   private processingVisibilityReset = false;
+  private scanStartedAt: number | null = null;
+  private elapsedTimerId: number | null = null;
 
   constructor(options: ScannerControllerOptions) {
     this.view = options.view;
@@ -182,6 +184,16 @@ export class ScannerController {
   }
 
   private handleFrameResult(result: FrameDecodeResult): void {
+    if (result.accepted && this.scanStartedAt === null) {
+      this.scanStartedAt = Date.now();
+      this.startElapsedTimer();
+      this.dispatch({
+        type: 'ELAPSED_UPDATED',
+        mode: result.configuredMode,
+        elapsedMs: 0,
+      });
+    }
+
     if (result.completedFile) {
       const download = this.downloads.create(
         result.completedFile.fileName,
@@ -250,6 +262,8 @@ export class ScannerController {
 
   private shutdownResources(): void {
     this.scheduler.stop();
+    this.stopElapsedTimer();
+    this.scanStartedAt = null;
     this.camera.stop(this.view.videoElement);
     this.decoder.stop();
     this.active = false;
@@ -262,6 +276,31 @@ export class ScannerController {
   private applySchedulerProfile(mode: DecoderModeValue): void {
     this.scheduler.setTargetFps(mode === 0 ? 6 : 12);
   }
+
+  private startElapsedTimer(): void {
+    if (this.elapsedTimerId !== null) {
+      return;
+    }
+
+    this.elapsedTimerId = window.setInterval(() => {
+      if (this.scanStartedAt === null) {
+        return;
+      }
+
+      this.dispatch({
+        type: 'ELAPSED_UPDATED',
+        mode: this.state.configuredMode,
+        elapsedMs: Date.now() - this.scanStartedAt,
+      });
+    }, 250);
+  }
+
+  private stopElapsedTimer(): void {
+    if (this.elapsedTimerId !== null) {
+      window.clearInterval(this.elapsedTimerId);
+      this.elapsedTimerId = null;
+    }
+  }
 }
 
 function isSameScannerState(left: ScannerState, right: ScannerState): boolean {
@@ -270,6 +309,7 @@ function isSameScannerState(left: ScannerState, right: ScannerState): boolean {
     left.configuredMode === right.configuredMode &&
     left.detectedMode === right.detectedMode &&
     Math.round(left.progress * 100) === Math.round(right.progress * 100) &&
+    Math.floor((left.elapsedMs ?? -1) / 1000) === Math.floor((right.elapsedMs ?? -1) / 1000) &&
     left.message === right.message &&
     left.download?.blobUrl === right.download?.blobUrl &&
     left.download?.fileName === right.download?.fileName

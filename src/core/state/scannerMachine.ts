@@ -16,6 +16,7 @@ export type ScannerEvent =
   | { type: 'START_REQUESTED'; mode: DecoderModeValue }
   | { type: 'READY'; mode: DecoderModeValue }
   | { type: 'FRAME_OBSERVED'; payload: FrameObservedPayload }
+  | { type: 'ELAPSED_UPDATED'; mode: DecoderModeValue; elapsedMs: number }
   | { type: 'COMPLETED'; mode: DecoderModeValue; download: DownloadArtifact }
   | { type: 'RESET'; mode: DecoderModeValue; message?: string }
   | { type: 'FAILED'; mode: DecoderModeValue; message: string }
@@ -29,6 +30,7 @@ export function createInitialScannerState(
     configuredMode: mode,
     detectedMode: null,
     progress: 0,
+    elapsedMs: null,
     message: 'Tap "Start scanning" after opening the page in Safari over HTTPS.',
     download: null,
   };
@@ -45,6 +47,7 @@ export function reduceScannerState(
         configuredMode: event.mode,
         detectedMode: null,
         progress: 0,
+        elapsedMs: null,
         message: 'Requesting camera permission and booting the WASM decoder...',
         download: null,
       };
@@ -69,6 +72,7 @@ export function reduceScannerState(
         configuredMode: event.payload.configuredMode,
         detectedMode: event.payload.detectedMode ?? state.detectedMode,
         progress: Math.max(state.progress, event.payload.progress),
+        elapsedMs: state.elapsedMs,
         message:
           Math.max(state.progress, event.payload.progress) > 0
             ? `Receiving file... ${Math.round(Math.max(state.progress, event.payload.progress) * 100)}%`
@@ -77,12 +81,19 @@ export function reduceScannerState(
               : event.payload.report || 'Scanning for cimbar frames...',
       };
     }
+    case 'ELAPSED_UPDATED':
+      return {
+        ...state,
+        configuredMode: event.mode,
+        elapsedMs: state.elapsedMs === null ? event.elapsedMs : Math.max(state.elapsedMs, event.elapsedMs),
+      };
     case 'COMPLETED':
       return {
         status: 'completed',
         configuredMode: event.mode,
         detectedMode: state.detectedMode,
         progress: 1,
+        elapsedMs: state.elapsedMs,
         message: `Decode finished. "${event.download.fileName}" is ready to download.`,
         download: event.download,
       };
@@ -92,6 +103,7 @@ export function reduceScannerState(
         configuredMode: event.mode,
         detectedMode: null,
         progress: 0,
+        elapsedMs: null,
         message:
           event.message ??
           'Decoder state cleared. Start scanning when the sender begins again.',
@@ -103,6 +115,7 @@ export function reduceScannerState(
         configuredMode: event.mode,
         detectedMode: state.detectedMode,
         progress: state.progress,
+        elapsedMs: state.elapsedMs,
         message: event.message,
         download: state.download,
       };
@@ -112,6 +125,7 @@ export function reduceScannerState(
         configuredMode: event.mode,
         detectedMode: null,
         progress: 0,
+        elapsedMs: null,
         message:
           event.message ?? 'Scanner stopped. Tap "Start scanning" to open the camera again.',
         download: state.download,

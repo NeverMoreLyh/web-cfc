@@ -34,6 +34,7 @@ export interface ScannerState {
   configuredMode: DecoderModeValue;
   detectedMode: DecoderModeValue | null;
   progress: number;
+  elapsedMs: number | null;
   message: string;
   download: DownloadArtifact | null;
 }

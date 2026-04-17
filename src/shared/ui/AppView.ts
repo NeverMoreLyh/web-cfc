@@ -25,6 +25,7 @@ export class AppView {
   private readonly detectedModeValue: HTMLElement;
   private readonly progressBar: HTMLElement;
   private readonly progressValue: HTMLElement;
+  private readonly elapsedValue: HTMLElement;
   private readonly messageBox: HTMLElement;
   private readonly downloadLink: HTMLAnchorElement;
   private readonly versionValue: HTMLElement;
@@ -61,6 +62,7 @@ export class AppView {
               <span class="status-chip"><strong>Mode</strong><em data-field="configuredMode">Auto</em></span>
               <span class="status-chip"><strong>Detected</strong><em data-field="detectedMode">Pending</em></span>
               <span class="status-chip"><strong>Progress</strong><em data-field="progressText">0%</em></span>
+              <span class="status-chip"><strong>Elapsed</strong><em data-field="elapsedText">--:--</em></span>
             </section>
 
             <div class="progress-shell compact">
@@ -97,6 +99,7 @@ export class AppView {
     this.progressValue = this.root.querySelector(
       '[data-field="progressText"]',
     ) as HTMLElement;
+    this.elapsedValue = this.root.querySelector('[data-field="elapsedText"]') as HTMLElement;
     this.messageBox = this.root.querySelector('#message-box') as HTMLElement;
     this.downloadLink = this.root.querySelector('#download-link') as HTMLAnchorElement;
     this.versionValue = this.root.querySelector('#version-badge') as HTMLElement;
@@ -117,6 +120,7 @@ export class AppView {
     this.detectedModeValue.textContent = modeLabel(state.detectedMode);
     this.progressBar.style.width = `${Math.round(state.progress * 100)}%`;
     this.progressValue.textContent = `${Math.round(state.progress * 100)}%`;
+    this.elapsedValue.textContent = formatElapsed(state.elapsedMs);
     this.messageBox.textContent = state.message;
     this.messageBox.dataset.tone = state.status === 'error' ? 'error' : 'neutral';
     this.modeSelect.value = String(state.configuredMode);
@@ -137,4 +141,15 @@ export class AppView {
   setVersion(version: string): void {
     this.versionValue.textContent = version;
   }
+}
+
+function formatElapsed(elapsedMs: number | null): string {
+  if (elapsedMs === null) {
+    return '--:--';
+  }
+
+  const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
