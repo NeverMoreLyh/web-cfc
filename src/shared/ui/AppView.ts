@@ -36,41 +36,10 @@ export class AppView {
           <div>
             <div class="pill">HTTPS · Safari first · libcimbar WASM</div>
             <h1>cimbar Web Receiver</h1>
-            <p>Use the iPhone rear camera to continuously scan animated cimbar codes and export the decoded file directly in Safari.</p>
           </div>
         </header>
 
         <main class="stage">
-          <section class="preview-card">
-            <video id="camera-preview" autoplay muted playsinline></video>
-            <div class="preview-overlay">
-              <div class="guide-frame"></div>
-              <div class="guide-text">Keep the sender display bright, steady, and centered inside the frame.</div>
-            </div>
-          </section>
-
-          <section class="status-grid">
-            <article class="status-card">
-              <div class="label">Status</div>
-              <div class="value" data-field="status">Idle</div>
-            </article>
-            <article class="status-card">
-              <div class="label">Configured Mode</div>
-              <div class="value" data-field="configuredMode">Auto</div>
-            </article>
-            <article class="status-card">
-              <div class="label">Detected Mode</div>
-              <div class="value" data-field="detectedMode">Pending</div>
-            </article>
-            <article class="status-card" style="grid-column: 1 / -1;">
-              <div class="label">Progress</div>
-              <div class="value" data-field="progressText">0%</div>
-              <div class="progress-shell">
-                <div class="progress-bar" data-field="progressBar"></div>
-              </div>
-            </article>
-          </section>
-
           <section class="control-card">
             <div class="control-row">
               <button type="button" data-kind="primary" id="start-button">Start scanning</button>
@@ -85,13 +54,26 @@ export class AppView {
               <a id="download-link" class="download-link" download>Download file</a>
             </div>
 
-            <div id="message-box" class="message-box"></div>
+            <section class="status-strip">
+              <span class="status-chip"><strong>Status</strong><em data-field="status">Idle</em></span>
+              <span class="status-chip"><strong>Mode</strong><em data-field="configuredMode">Auto</em></span>
+              <span class="status-chip"><strong>Detected</strong><em data-field="detectedMode">Pending</em></span>
+              <span class="status-chip"><strong>Progress</strong><em data-field="progressText">0%</em></span>
+            </section>
 
-            <ul class="hint-list">
-              <li>Start from Safari with a user tap. iPhone will not open the camera reliably on page load alone.</li>
-              <li>The page only supports receiving and decoding files within libcimbar/cfc native limits.</li>
-              <li>When the file finishes, Safari may preview it or save it depending on the file type and iOS version.</li>
-            </ul>
+            <div class="progress-shell compact">
+              <div class="progress-bar" data-field="progressBar"></div>
+            </div>
+
+            <div id="message-box" class="message-box"></div>
+          </section>
+
+          <section class="preview-card">
+            <video id="camera-preview" autoplay muted playsinline></video>
+            <div class="preview-overlay">
+              <div class="guide-frame"></div>
+              <div class="guide-text">Keep the sender display bright, steady, and centered inside the frame.</div>
+            </div>
           </section>
         </main>
       </div>

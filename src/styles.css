@@ -57,59 +57,50 @@ a {
 }
 
 .app-shell {
-  min-height: 100vh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  gap: 18px;
+  gap: 12px;
   padding:
-    max(20px, env(safe-area-inset-top))
-    18px
-    max(20px, env(safe-area-inset-bottom))
-    18px;
+    max(14px, env(safe-area-inset-top))
+    14px
+    max(16px, env(safe-area-inset-bottom))
+    14px;
 }
 
 .hero {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 10px;
 }
 
 .hero h1 {
   margin: 0;
-  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  font-size: clamp(1.15rem, 3.6vw, 1.6rem);
   letter-spacing: 0.02em;
-}
-
-.hero p {
-  margin: 8px 0 0;
-  color: var(--muted);
-  max-width: 48rem;
 }
 
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 6px 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: #dff4e4;
   white-space: nowrap;
+  font-size: 0.82rem;
 }
 
 .stage {
   display: grid;
-  gap: 18px;
+  gap: 12px;
 }
 
 .preview-card,
-.control-card,
-.status-card {
+.control-card {
   background: var(--panel);
   border: 1px solid var(--panel-border);
-  border-radius: 24px;
+  border-radius: 20px;
   backdrop-filter: blur(18px);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.24);
 }
@@ -118,7 +109,7 @@ a {
   position: relative;
   overflow: hidden;
   aspect-ratio: 9 / 16;
-  min-height: 320px;
+  min-height: 52vh;
 }
 
 .preview-card video,
@@ -140,7 +131,7 @@ a {
 }
 
 .guide-frame {
-  width: min(72vw, 360px);
+  width: min(70vw, 320px);
   aspect-ratio: 1 / 1;
   border-radius: 24px;
   border: 2px solid rgba(255, 255, 255, 0.18);
@@ -169,34 +160,16 @@ a {
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.5);
 }
 
-.status-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.status-card {
-  padding: 16px;
-}
-
-.status-card .label {
-  color: var(--muted);
-  font-size: 0.9rem;
-}
-
-.status-card .value {
-  margin-top: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
 .progress-shell {
-  margin-top: 12px;
   width: 100%;
-  height: 12px;
+  height: 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.08);
   overflow: hidden;
+}
+
+.progress-shell.compact {
+  margin-top: 2px;
 }
 
 .progress-bar {
@@ -208,23 +181,23 @@ a {
 }
 
 .control-card {
-  padding: 18px;
+  padding: 12px;
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .control-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
 }
 
 .control-row button,
 .control-row select,
 .download-link {
-  min-height: 46px;
-  padding: 0 16px;
+  min-height: 40px;
+  padding: 0 12px;
 }
 
 .control-row button[data-kind="primary"] {
@@ -252,8 +225,41 @@ a {
   display: inline-flex;
 }
 
+.status-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  min-width: 0;
+}
+
+.status-chip strong {
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.status-chip em {
+  font-style: normal;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #f3f7f8;
+}
+
 .message-box {
-  min-height: 24px;
+  min-height: 20px;
+  font-size: 0.92rem;
   color: var(--muted);
 }
 
@@ -261,23 +267,28 @@ a {
   color: var(--danger);
 }
 
-.hint-list {
-  margin: 0;
-  padding-left: 18px;
-  color: var(--muted);
-}
-
 @media (max-width: 720px) {
-  .status-grid {
-    grid-template-columns: 1fr;
-  }
-
   .hero {
-    flex-direction: column;
-    align-items: flex-start;
+    gap: 8px;
   }
 
   .preview-card {
-    aspect-ratio: 3 / 4;
+    min-height: 54vh;
+  }
+
+  .status-strip {
+    gap: 6px;
+  }
+
+  .status-chip {
+    padding: 5px 8px;
+  }
+
+  .status-chip strong {
+    font-size: 0.68rem;
+  }
+
+  .status-chip em {
+    font-size: 0.85rem;
   }
 }
